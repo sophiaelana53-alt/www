@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fractal Admin - Gerenciamento de Catálogos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e5fa0;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            z-index: 1000;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 15px 20px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #1a5490;
+            border-color: #1a5490;
+        }
+
+        .table th {
+            border-top: none;
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="px-3 mb-4">
+            <img src="https://fractal.ind.br/img/logo_site.png" alt="Fractal" class="img-fluid" style="max-width: 150px;">
+        </div>
+        
+        <nav class="nav flex-column">
+            <button class="nav-link active" onclick="showSection('dashboard')">
+                <i class="fas fa-chart-line me-2"></i>HOME
+            </button>
+            <button class="nav-link" onclick="showSection('experimentos')">
+                <i class="fas fa-flask me-2"></i>Experimentos
+            </button>
+            <button class="nav-link" onclick="showSection('miniexps')">
+                <i class="fas fa-microscope me-2"></i>MiniExPs
+            </button>
+            <button class="nav-link" onclick="showSection('souvenirs')">
+                <i class="fas fa-gift me-2"></i>Souvenirs
+            </button>
+            <button class="nav-link" onclick="showSection('sequencias')">
+                <i class="fas fa-list-ol me-2"></i>Sequências Didáticas
+            </button>
+            <button class="nav-link" onclick="showSection('configuracoes')">
+                <i class="fas fa-cog me-2"></i>Configurações
+            </button>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="admin-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="mb-0">Fractal Admin</h1>
+                <div>
+                    <span class="text-muted me-3">Último acesso: <span id="lastAccess">--</span></span>
+                    <a href="../index.html" class="btn btn-outline-primary">
+                        <i class="fas fa-external-link-alt me-1"></i>Ver Site
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard-section" class="section">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-flask fa-2x text-primary mb-3"></i>
+                            <h3 class="mb-1" id="total-experimentos">0</h3>
+                            <p class="text-muted mb-0">Experimentos</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-microscope fa-2x text-success mb-3"></i>
+                            <h3 class="mb-1" id="total-miniexps">0</h3>
+                            <p class="text-muted mb-0">MiniExPs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-gift fa-2x text-warning mb-3"></i>
+                            <h3 class="mb-1" id="total-souvenirs">0</h3>
+                            <p class="text-muted mb-0">Souvenirs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-list-ol fa-2x text-info mb-3"></i>
+                            <h3 class="mb-1" id="total-sequencias">0</h3>
+                            <p class="text-muted mb-0">Sequências</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Produtos Mais Acessados</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Categoria</th>
+                                            <th>Acessos</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="popular-products">
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Ações Rápidas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary add-product-btn" data-bs-toggle="modal" data-bs-target="#productModal" data-section-type="experimentos">
+                                    <i class="fas fa-plus me-1"></i>Adicionar Experimento
+                                </button>
+                                <button class="btn btn-success add-product-btn" data-bs-toggle="modal" data-bs-target="#productModal" data-section-type="miniexps">
+                                    <i class="fas fa-plus me-1"></i>Adicionar MiniExP
+                                </button>
+                                <button class="btn btn-warning add-product-btn" data-bs-toggle="modal" data-bs-target="#productModal" data-section-type="souvenirs">
+                                    <i class="fas fa-plus me-1"></i>Adicionar Souvenir
+                                </button>
+                                <button class="btn btn-info add-product-btn" data-bs-toggle="modal" data-bs-target="#productModal" data-section-type="sequencias">
+                                    <i class="fas fa-plus me-1"></i>Adicionar Sequência
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dynamic-content" class="section" style="display:none;">
+            </div>
+        
+        <div class="mt-4 d-flex justify-content-end">
+            <button onclick="exportCatalog()" class="btn btn-secondary me-2">
+                <i class="fas fa-download me-1"></i> Exportar Catálogo JSON
+            </button>
+            <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">
+                <i class="fas fa-upload me-1"></i> Importar Catálogo JSON
+            </button>
+            <input type="file" id="importFile" accept=".json" style="display:none;">
+        </div>
+    </div>
+
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Gerenciar Produto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <input type="hidden" id="productId">
+                        <input type="hidden" id="productType">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="productName" class="form-label">Nome</label>
+                                    <input type="text" class="form-control" id="productName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="productCategory" class="form-label">Categoria</label>
+                                    <select class="form-select" id="productCategory" required>
+                                        <option value="">Selecione...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="productDescription" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="productDescription" rows="3"></textarea>
+                        </div>
+                        
+                        <div id="miniexp-specific-fields">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="productImage" class="form-label">URL da Imagem</label>
+                                        <input type="url" class="form-control" id="productImage">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="productPrice" class="form-label">Preço</label>
+                                        <input type="text" class="form-control" id="productPrice" placeholder="R$ 75,00">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productFeatures" class="form-label">Características (uma por linha)</label>
+                                <textarea class="form-control" id="productFeatures" rows="4" placeholder="Digite uma característica por linha"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productIncludes" class="form-label">Itens Inclusos (um por linha)</label>
+                                <textarea class="form-control" id="productIncludes" rows="4" placeholder="Digite um item por linha"></textarea>
+                            </div>
+                        </div>
+
+                        <div id="experimento-sequencia-specific-fields">
+                             <div class="mb-3">
+                                <label for="productPdf" class="form-label">URL do PDF Manual</label>
+                                <input type="url" class="form-control" id="productPdf">
+                             </div>
+                        </div>
+                        <div class="mb-3" id="productVideosGroup">
+                           <label for="productVideos" class="form-label">Vídeos (Título - URL, um por linha)</label>
+                           <textarea class="form-control" id="productVideos" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProduct()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

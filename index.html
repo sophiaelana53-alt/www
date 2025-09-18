@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fractal - Experimentos Científicos Portáteis</title>
+    <meta name="description" content="Empresa especializada no desenvolvimento e comercialização de kits didáticos portáteis para o ensino de Física e Ciências">
+    <meta name="keywords" content="Kits didáticos, Portáteis, Ensino, Ciências, Física, Educação, Souvenires científicos, Laboratório de Ciências">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <link rel="icon" href="https://fractal.ind.br/favicon.ico">
+</head>
+<body>
+    <!-- WhatsApp Float Button -->
+    <div id="whatsapp-float" class="whatsapp-float">
+        <a href="https://wa.me/5584994130079" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="#home">
+                <img src="src/img/logo_site_cabeçalho.png" alt="Fractal Logo" class="navbar-logo">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars text-white"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#sobre">Sobre</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#equipe">Equipe</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showCatalog('sequencias')">Sequências Didáticas</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="produtosDropdown" role="button" data-bs-toggle="dropdown">
+                            Produtos
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="showCatalog('experimentos')">Experimentos</a></a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="showCatalog('miniexps')">Mini Experimentos</a></a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="showCatalog('souvenirs')">Souvenirs</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contato">Contato</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section" 
+            style="background: url('src/img/fundo_inicial.png') no-repeat center center; 
+                    background-size: cover;">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <!-- Conteúdo lado esquerdo -->
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1 class="hero-title">Experimentos Científicos <span class="text-accent">Portáteis</span></h1>
+                        <p class="hero-subtitle">Transforme o ensino de ciências com nossos inovadores kits didáticos portáteis. Mais que ensino, uma experiência científica completa.</p>
+                        <div class="hero-buttons">
+                            <a href="#nossos-produtos" class="btn btn-primary btn-lg me-3">
+                                <i class="fas fa-microscope me-2"></i>Ver Produtos
+                            </a>
+                            <a href="#sobre" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-info-circle me-2"></i>Saiba Mais
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="sobre" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center mb-5">
+                    <h2 class="section-title">Sobre a Fractal</h2>
+                    <p class="section-subtitle">Inovação e qualidade no ensino experimental desde 2001</p>
+                </div>
+            </div>
+            
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="about-image-container">
+                        <img src="src/img/fundo_inicial2.png" alt="Fractal Logo" class="img-fluid rounded shadow">
+                        <div class="about-overlay">
+                            <div class="about-stats">
+                                <div class="stat-item">
+                                    <h3>24+</h3>
+                                    <p>Anos de Experiência</p>
+                                </div>
+                                <div class="stat-item">
+                                    <h3>200+</h3>
+                                    <p>Experimentos Criados</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h3>Nossa História</h3>
+                    <p>A <strong>Fractal</strong> foi fundada em 2001 por uma equipe de professores e educadores preocupados em melhorar o ensino de Ciências. Nos primeiros anos projetou e montou mais de 200 experimentos de laboratórios para uso em Escolas, Universidades e Museus.</p>
+                    <p>Agora fabricamos equipamentos portáteis e lúdicos para o ensino prático de Ciências no ensino fundamental, médio e universitário.</p>
+                </div>
+            </div>
+
+            <!-- Mission, Vision, Values -->
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="card h-100 text-center mission-card">
+                        <div class="card-body">
+                            <div class="icon-box mb-3">
+                                <i class="fas fa-crosshairs"></i> <!-- alvo com flecha -->
+                            </div>
+                            <h4>Missão</h4>
+                            <p>Fabricar e comercializar os inovadores Experimentos Portáteis para aprendizagem contemporânea no ensino de ciências.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card h-100 text-center vision-card">
+                        <div class="card-body">
+                            <div class="icon-box mb-3">
+                                <i class="fas fa-globe"></i> <!-- visão/futuro -->
+                            </div>
+                            <h4>Visão</h4>
+                            <p>Ser uma marca com liderança em ensino experimental e colaborar para alfabetização e divulgação científica no mundo.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card h-100 text-center values-card">
+                        <div class="card-body">
+                            <div class="icon-box mb-3">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <h4>Valores</h4>
+                            <p>A observação e a experimentação mudam o futuro da nossa sociedade.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Showcase -->
+    <section id="nossos-produtos" class="py-5 products-showcase">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center mb-5">
+                    <h2 class="section-title text-white">Nossos Produtos</h2>
+                    <p class="section-subtitle text-white">Experimentos portáteis para todas as áreas do conhecimento</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="product-category-card" onclick="showCatalog('experimentos')">
+                        <div class="category-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h4>Experimentos ExP®</h4>
+                        <p>Kits completos para ensino de Física, Química, Biologia, Matemática e Astronomia</p>
+                        <span class="category-link">Ver Catálogo <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="product-category-card" onclick="showCatalog('miniexps')">
+                        <div class="category-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <h4>MiniExPs</h4>
+                        <p>Experimentos portáteis em caixinhas de 15x10x5cm por apenas R$ 75,00</p>
+                        <span class="category-link">Ver Catálogo <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="product-category-card" onclick="showCatalog('souvenirs')">
+                        <div class="category-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <h4>Souvenirs Científicos</h4>
+                        <p>Presentes educativos e materiais científicos especiais</p>
+                        <span class="category-link">Ver Catálogo <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="product-category-card" onclick="showCatalog('sequencias')">
+                        <div class="category-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h4>Sequências Didáticas</h4>
+                        <p>Roteiros completos de aulas experimentais organizadas</p>
+                        <span class="category-link">Ver Catálogo <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Catalog Section (Hidden by default) -->
+    <section id="catalog-section" class="py-5" style="display: none;">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <h2 id="catalog-title">Catálogo</h2>
+                </div>
+                <div class="col-lg-6">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="form-control" placeholder="Pesquisar produtos...">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="catalog-filters" class="mb-4">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary active" data-filter="all">Todos</button>
+                </div>
+            </div>
+
+            <div id="catalog-content" class="row g-4">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="equipe" class="py-5 team-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center mb-5">
+                    <h2 class="section-title">Nossa Equipe</h2>
+                    <p class="section-subtitle">Profissionais especializados em educação científica</p>
+                </div>
+            </div>
+
+            <!-- Team Carousel -->
+            <div id="teamCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="10000">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row g-4">
+                            <div class="col-lg-3 col-md-6">
+                                <div class="team-card" style="background-color:#fff; box-shadow:none; border:none;">
+                                    <div class="team-avatar">
+                                        <i class="fas fa-user-tie"></i>
+                                    </div>
+                                    <h5>Cauê Lima</h5>
+                                    <p class="team-role">Diretor Fractal</p>
+                                    <p class="team-description">Líder visionário da empresa, responsável pela direção estratégica e inovação.</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="team-card" style="background-color:#fff; box-shadow:none; border:none;">
+                                    <div class="team-avatar">
+                                        <i class="fas fa-atom"></i>
+                                    </div>
+                                    <h5>Prof. Dr. Carlos Chesman</h5>
+                                    <p class="team-role">Físico - UFRN</p>
+                                    <p class="team-description">Especialista em física experimental e desenvolvimento de metodologias de ensino.</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="team-card" style="background-color:#fff; box-shadow:none; border:none;">
+                                    <div class="team-avatar">
+                                        <i class="fas fa-brain"></i>
+                                    </div>
+                                    <h5>Profa. Dra. Andrezza Tavares</h5>
+                                    <p class="team-role">Psicopedagoga - IFRN</p>
+                                    <p class="team-description">Especialista em processos de aprendizagem e metodologias educacionais.</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="team-card" style="background-color:#fff; box-shadow:none; border:none;">
+                                    <div class="team-avatar">
+                                        <i class="fas fa-microscope"></i>
+                                    </div>
+                                    <h5>Dr. Neymar Pereira</h5>
+                                    <p class="team-role">Físico - UFRN</p>
+                                    <p class="team-description">Pesquisador em física aplicada e desenvolvimento de experimentos.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row g-4">
+                            <div class="col-lg-3 col-md-6">
+                                <div class="team-card" style="background-color:#fff; box-shadow:none; border:none;">
+                                    <div class="team-avatar">
+                                        <i class="fas fa-flask"></i>
+                                    </div>
+                                    <h5>MsC. Mizraim Bessa</h5>
+                                    <p class="team-role">Químico - Fractal</p>
+                                    <p class="team-description">Especialista em química experimental e desenvolvimento de kits didáticos.</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="team-card" style="background-color:#fff; box-shadow:none; border:none;">
+                                    <div class="team-avatar">
+                                        <i class="fas fa-calculator"></i>
+                                    </div>
+                                    <h5>Alcides Silva</h5>
+                                    <p class="team-role">Físico - Fractal</p>
+                                    <p class="team-description">Físico especializado em instrumentação e desenvolvimento de equipamentos.</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="team-card" style="background-color:#fff; box-shadow:none; border:none;">
+                                    <div class="team-avatar">
+                                        <i class="fas fa-leaf"></i>
+                                    </div>
+                                    <h5>Tereza Costa</h5>
+                                    <p class="team-role">Bióloga - Fractal</p>
+                                    <p class="team-description">Bióloga especializada em experimentos de ciências da vida.</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="team-card" style="background-color:#fff; box-shadow:none; border:none;">
+                                    <div class="team-avatar">
+                                        <i class="fas fa-code"></i>
+                                    </div>
+                                    <h5>Rudson Gomes</h5>
+                                    <p class="team-role">Físico e Engenheiro de Software</p>
+                                    <p class="team-description">Responsável pela tecnologia e desenvolvimento de soluções digitais.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#teamCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#teamCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contato" class="py-5 bg-primary text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center mb-5">
+                    <h2 class="section-title text-white">Entre em Contato</h2>
+                    <p class="section-subtitle text-white">Estamos prontos para atender suas necessidades educacionais</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="contact-item text-center">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h5>Endereço</h5>
+                        <p>Av. Odilon Gomes de Lima, 2001<br>Capim Macio<br>Natal/RN - 59078-400</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="contact-item text-center">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h5>Telefone</h5>
+                        <p><a href="https://wa.me/5584994130079" class="text-white">(84) 99413-0079</a></p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="contact-item text-center">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h5>E-mail</h5>
+                        <p><a href="mailto:contato@fractal.ind.br" class="text-white">contato@fractal.ind.br</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer py-4 bg-dark text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2025 Fractal Ltda. Todos os direitos reservados.</p>
+                    <small>CNPJ: 04.485.158/0001-50</small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/empresafractal/" target="blank" class="text-white me-3">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://wa.me/5584994130079" target="blank" class="text-white me-3">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="mailto:contato@fractal.ind.br" class="text-white">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Product Detail Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="productModalBody">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <a href="#" id="whatsappButton" class="btn btn-success" target="_blank">
+                        <i class="fab fa-whatsapp me-2"></i>Consultar no WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoModalTitle">Vídeo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="ratio ratio-16x9">
+                        <video id="modalVideo" controls>
+                            <source src="" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/catalog-data.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
