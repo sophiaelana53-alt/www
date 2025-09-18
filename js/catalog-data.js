@@ -570,7 +570,7 @@ const catalogData = {
         ]
     },
     miniexps: {
-        title: "MiniExPs - R$ 75,00",
+        title: "MiniExPs",
         categories: ["Física", "Química", "Biologia", "Matemática"],
         products: [
             {
@@ -971,155 +971,17 @@ const catalogData = {
         categories: ["Física Básica", "Química Geral", "Biologia", "Matemática Aplicada"],
         products: [
             {
-                id: "seq-mecanica",
-                name: "Mecânica Fundamental",
+                id: "seq-teste",
+                name: "EM BREVE",
                 category: "Física Básica",
-                description: "Sequência completa para ensino de mecânica clássica",
-                experiments: ["ExP F.01", "ExP F.02", "Força e Movimento"],
-                duration: "8 aulas",
-                level: "Ensino Médio",
+                description: "Novidade em breve, fique atento!",
+                experiments: [""],
+                duration: "",
+                level: "",
                 features: [
-                    "Leis de Newton",
-                    "Colisões e conservação",
-                    "Energia e trabalho",
-                    "Movimento harmônico"
+                    ""
                 ]
             },
-            {
-                id: "seq-optica",
-                name: "Óptica Geométrica e Física",
-                category: "Física Básica",
-                description: "Estudo completo da luz e fenômenos ópticos",
-                experiments: ["ExP F.13", "ExP F.14", "Controlando a Luz"],
-                duration: "6 aulas",
-                level: "Ensino Médio",
-                features: [
-                    "Reflexão e refração",
-                    "Lentes e espelhos",
-                    "Interferência e difração",
-                    "Polarização da luz"
-                ]
-            },
-            {
-                id: "seq-eletromag",
-                name: "Eletromagnetismo Básico",
-                category: "Física Básica",
-                description: "Fundamentos de eletricidade e magnetismo",
-                experiments: ["ExP F.09", "ExP F.10", "ExP F.12"],
-                duration: "10 aulas",
-                level: "Ensino Médio",
-                features: [
-                    "Lei de Ohm e circuitos",
-                    "Magnetismo e bússolas",
-                    "Indução eletromagnética",
-                    "Geradores e motores"
-                ]
-            },
-            {
-                id: "seq-quimica-mol",
-                name: "Estruturas Moleculares",
-                category: "Química Geral",
-                description: "Química orgânica e estruturas tridimensionais",
-                experiments: ["ExP Q.01", "ExP F.17", "ExP F.18"],
-                duration: "8 aulas",
-                level: "Ensino Médio",
-                features: [
-                    "Moléculas orgânicas",
-                    "Estruturas cristalinas",
-                    "Formas alotrópicas do carbono",
-                    "Ligações químicas"
-                ]
-            },
-            {
-                id: "seq-termo",
-                name: "Termodinâmica Aplicada",
-                category: "Física Básica",
-                description: "Calor, temperatura e transformações energéticas",
-                experiments: ["ExP F.05", "ExP Q.09"],
-                duration: "6 aulas",
-                level: "Ensino Médio",
-                features: [
-                    "Leis da termodinâmica",
-                    "Transferência de calor",
-                    "Refrigeração",
-                    "Efeito Peltier"
-                ]
-            },
-            {
-                id: "seq-microscopio",
-                name: "Microscopia e Célula",
-                category: "Biologia",
-                description: "Princípios de microscopia e estruturas celulares",
-                experiments: ["ExP B.01", "MiniMicroscópio"],
-                duration: "5 aulas",
-                level: "Ensino Fundamental/Médio",
-                features: [
-                    "Uso do microscópio",
-                    "Preparação de lâminas",
-                    "Observação celular",
-                    "Estruturas microscópicas"
-                ]
-            },
-            {
-                id: "seq-astronomia",
-                name: "Observação Astronômica",
-                category: "Física Básica",
-                description: "Instrumentos ópticos e observação celeste",
-                experiments: ["ExP A.01", "ExP A.02", "MiniTelescópio"],
-                duration: "4 aulas",
-                level: "Todos os níveis",
-                features: [
-                    "Princípios do telescópio",
-                    "Observação terrestre",
-                    "Observação celeste",
-                    "Instrumentação astronômica"
-                ]
-            },
-            {
-                id: "seq-matematica",
-                name: "Matemática Experimental",
-                category: "Matemática Aplicada",
-                description: "Conceitos matemáticos através de experimentos",
-                experiments: ["ExP M.01", "ExP M.02", "MiniBalança"],
-                duration: "7 aulas",
-                level: "Ensino Fundamental",
-                features: [
-                    "Formas geométricas",
-                    "Operações básicas",
-                    "Equações práticas",
-                    "Geometria espacial"
-                ]
-            },
-            {
-                id: "seq-processo-quim",
-                name: "Processos Químicos Industriais",
-                category: "Química Geral",
-                description: "Processos de separação e síntese química",
-                experiments: ["ExP Q.10", "ExP Q.11", "MiniVidrarias"],
-                duration: "6 aulas",
-                level: "Ensino Médio",
-                features: [
-                    "Destilação",
-                    "Saponificação",
-                    "Vidrarias de laboratório",
-                    "Processos industriais"
-                ]
-            },
-            {
-                id: "seq-corpo-humano",
-                name: "Anatomia e Corpo Humano",
-                category: "Biologia",
-                description: "Estudo do corpo humano e seus sistemas",
-                experiments: ["ExP B.02", "ExP B.03"],
-                duration: "8 aulas",
-                level: "Ensino Fundamental",
-                features: [
-                    "Sistemas do corpo humano",
-                    "Esqueleto e músculos",
-                    "Células e tecidos",
-                    "Anatomia básica"
-                ]
-            }
         ]
     }
 };
