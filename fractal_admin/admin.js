@@ -1,298 +1,310 @@
-// catalogData será populado dinamicamente pelo backend
-let catalogData = {
-    experimentos: {
-        title: "Experimentos",
-        categories: [],
-        products: []
-    },
-    miniexps: {
-        title: "MiniExPs",
-        categories: [],
-        products: []
-    },
-    souvenirs: {
-        title: "Souvenirs",
-        categories: [],
-        products: []
-    },
-    sequencias: {
-        title: "Sequências Didáticas",
-        categories: [],
-        products: []
-    }
-};
-
+// Admin Panel JavaScript
 let currentSection = 'dashboard';
 let isEditing = false;
 let editingProductId = null;
+let editingProductType = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-    setupEventListeners();
-    loadSavedData().then(() => {
-        showSection(currentSection);
-    });
+// Initialize admin panel
+document.addEventListener('DOMContentLoaded', function() {
+    initializeAdmin();
+    loadDashboard();
+    updateLastAccess();
 });
 
-function setupEventListeners() {
-    // Event listener para a navegação do sidebar
-    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-        link.addEventListener('click', (event) => {
-            document.querySelectorAll('.sidebar .nav-link').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            const section = event.target.getAttribute('onclick').match(/'(.*?)'/)[1];
-            showSection(section);
-        });
-    });
-
-    // Listener para o formulário do modal
-    document.getElementById('productForm').addEventListener('submit', (event) => {
-        event.preventDefault();
-        saveProduct();
-    });
-
-    // Listener para o botão de adicionar produto na página
-    document.getElementById('dynamic-content').addEventListener('click', (event) => {
-        if (event.target.closest('.add-product-btn')) {
-            const sectionType = event.target.closest('.add-product-btn').dataset.sectionType;
-            showProductModal(sectionType);
-        }
-    });
-
-    // Listeners para os botões de Ações Rápidas
-    document.querySelectorAll('.btn[onclick^="showSection"]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const section = e.target.getAttribute('onclick').match(/'(.*?)'/)[1];
-            showSection(section);
-        });
-    });
-
-    // Listener para o modal
-    const productModal = document.getElementById('productModal');
-    if (productModal) {
-        productModal.addEventListener('hidden.bs.modal', resetModal);
-    }
+// Initialize admin functionality
+function initializeAdmin() {
+    // Load initial data
+    loadDashboard();
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    // Check for admin authentication (basic implementation)
+    checkAuthentication();
 }
 
-async function loadSavedData() {
-    try {
-        const response = await fetch('backend.php', { method: 'GET' });
-        if (!response.ok) {
-            if (response.status === 404) {
-                console.warn("Arquivo catalog.json não encontrado. Iniciando com dados padrão.");
-                return;
-            }
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-
-        console.log("entrei");
-        console.log(data);
-
-        Object.keys(data).forEach(key => {
-            if (catalogData[key]) {
-                catalogData[key] = data[key];
-            }
-        });
-        
-        console.log("Dados do catálogo carregados do servidor com sucesso.");
-    } catch (error) {
-        console.error("Erro ao carregar dados do servidor:", error);
-    }
-}
-
-async function saveDataToBackend(data) {
-    try {
-        const response = await fetch('backend.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        const result = await response.json();
-        if (result.status === "success") {
-            return true;
+// Check basic authentication
+function checkAuthentication() {
+    const isAuthenticated = localStorage.getItem('fractal-admin-auth');
+    if (!isAuthenticated) {
+        const password = prompt('Digite a senha de administrador:');
+        if (password === 'fractal2025admin') {
+            localStorage.setItem('fractal-admin-auth', 'true');
+            localStorage.setItem('fractal-admin-lastaccess', new Date().toLocaleString());
         } else {
-            console.error('Erro no backend:', result.message);
-            alert('Erro ao salvar no servidor: ' + result.message);
-            return false;
+            alert('Acesso negado!');
+            window.location.href = '../index.html';
+            return;
         }
-    } catch (error) {
-        console.error('Erro ao enviar dados para o backend:', error);
-        alert('Erro ao salvar. Verifique a conexão com o servidor.');
-        return false;
     }
 }
 
+// Update last access time
+function updateLastAccess() {
+    const lastAccess = localStorage.getItem('fractal-admin-lastaccess');
+    if (lastAccess) {
+        document.getElementById('lastAccess').textContent = lastAccess;
+    }
+    localStorage.setItem('fractal-admin-lastaccess', new Date().toLocaleString());
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Sidebar navigation
+    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+        link.addEventListener('click', function() {
+            // Update active state
+            document.querySelectorAll('.sidebar .nav-link').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+}
+
+// Show section
 function showSection(section) {
     currentSection = section;
-    document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
-
-    // Remove a classe 'active' de todos os botões de navegação e adiciona ao botão da seção atual
-    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-        const sectionName = link.getAttribute('onclick').match(/'(.*?)'/)[1];
-        link.classList.remove('active');
-        if (sectionName === section) {
-            link.classList.add('active');
-        }
-    });
-
+    
+    // Hide dashboard if not dashboard
+    const dashboardSection = document.getElementById('dashboard-section');
+    const dynamicContent = document.getElementById('dynamic-content');
+    
     if (section === 'dashboard') {
-        document.getElementById('dashboard-section').style.display = 'block';
-        renderDashboard();
+        dashboardSection.style.display = 'block';
+        dynamicContent.innerHTML = '';
+        loadDashboard();
     } else {
-        document.getElementById('dynamic-content').style.display = 'block';
-        renderCatalogSection(section);
+        dashboardSection.style.display = 'none';
+        loadSectionContent(section);
     }
 }
 
-function renderDashboard() {
-    // Contar o número de produtos em cada categoria
-    const totalExperimentos = catalogData.experimentos.products.length;
-    const totalMiniexps = catalogData.miniexps.products.length;
-    const totalSouvenirs = catalogData.souvenirs.products.length;
-    const totalSequencias = catalogData.sequencias.products.length;
-
-    // Atualizar os elementos do dashboard
-    document.getElementById('total-experimentos').textContent = totalExperimentos;
-    document.getElementById('total-miniexps').textContent = totalMiniexps;
-    document.getElementById('total-souvenirs').textContent = totalSouvenirs;
-    document.getElementById('total-sequencias').textContent = totalSequencias;
-
-    // Exibir a data do último acesso (se disponível)
-    // Isso é apenas um exemplo, o backend precisaria salvar essa informação.
-    const now = new Date();
-    const lastAccessString = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-    document.getElementById('lastAccess').textContent = lastAccessString;
+// Load dashboard data
+function loadDashboard() {
+    // Update counters
+    document.getElementById('total-experimentos').textContent = catalogData.experimentos.products.length;
+    document.getElementById('total-miniexps').textContent = catalogData.miniexps.products.length;
+    document.getElementById('total-souvenirs').textContent = catalogData.souvenirs.products.length;
+    document.getElementById('total-sequencias').textContent = catalogData.sequencias.products.length;
+    
+    // Load popular products (mock data)
+    loadPopularProducts();
 }
 
-function renderCatalogSection(section) {
-    const container = document.getElementById('dynamic-content');
-    container.innerHTML = '';
-    const data = catalogData[section];
-
-    if (!data || !data.products) {
-        container.innerHTML = `<p class="alert alert-warning">Dados para a seção '${section}' estão incompletos ou não existem.</p>`;
-        return;
-    }
-
-    const sectionTitle = document.createElement('h2');
-    sectionTitle.className = 'mb-4';
-    sectionTitle.textContent = data.title;
-    container.appendChild(sectionTitle);
-
-    const addButton = document.createElement('button');
-    addButton.className = 'btn btn-primary mb-4 add-product-btn';
-    addButton.dataset.sectionType = section;
-    addButton.innerHTML = `<i class="fas fa-plus me-1"></i> Adicionar ${data.title.replace('Didáticas', '').trim()}`;
-    container.appendChild(addButton);
-
-    const table = document.createElement('table');
-    table.className = 'table table-striped table-hover';
-    table.innerHTML = `
-        <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Nome</th>
-                <th scope="col">Categoria</th>
-                <th scope="col">Ações</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    `;
-    const tableBody = table.querySelector('tbody');
-
-    data.products.forEach(product => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${product.id}</td>
+// Load popular products
+function loadPopularProducts() {
+    const popularProductsContainer = document.getElementById('popular-products');
+    
+    // Mock data for popular products
+    const mockPopularProducts = [
+        { name: 'ExP F.01 - LEIS DE NEWTON', category: 'Física', views: 156, status: 'active' },
+        { name: 'MINITELESCÓPIO', category: 'MiniExP', views: 134, status: 'active' },
+        { name: 'ExP F.09 - LEIS DA ELETRÔNICA', category: 'Física', views: 128, status: 'active' },
+        { name: 'MINIBALANÇA MATEMÁTICA', category: 'MiniExP', views: 98, status: 'active' },
+        { name: 'Lente Convergente', category: 'Souvenir', views: 76, status: 'active' }
+    ];
+    
+    popularProductsContainer.innerHTML = mockPopularProducts.map(product => `
+        <tr>
             <td>${product.name}</td>
-            <td>${product.category}</td>
-            <td>
-                <button class="btn btn-sm btn-info me-2" onclick="showProductModal('${section}', '${product.id}')">
-                    <i class="fas fa-edit"></i> Editar
-                </button>
-                <button class="btn btn-sm btn-danger" onclick="deleteProduct('${section}', '${product.id}')">
-                    <i class="fas fa-trash-alt"></i> Excluir
-                </button>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
-
-    container.appendChild(table);
+            <td><span class="badge bg-primary">${product.category}</span></td>
+            <td>${product.views}</td>
+            <td><span class="status-badge ${product.status === 'active' ? 'status-active' : 'status-inactive'}">${product.status === 'active' ? 'Ativo' : 'Inativo'}</span></td>
+        </tr>
+    `).join('');
 }
 
-function showProductModal(sectionType, productId = null) {
-    const modal = new bootstrap.Modal(document.getElementById('productModal'));
-    resetModal();
-    document.getElementById('productType').value = sectionType;
+// Load section content
+function loadSectionContent(section) {
+    const dynamicContent = document.getElementById('dynamic-content');
+    
+    switch(section) {
+        case 'experimentos':
+            loadProductManagement('experimentos', 'Experimentos ExP®', 'flask');
+            break;
+        case 'miniexps':
+            loadProductManagement('miniexps', 'MiniExPs', 'microscope');
+            break;
+        case 'souvenirs':
+            loadProductManagement('souvenirs', 'Souvenirs Científicos', 'gift');
+            break;
+        case 'sequencias':
+            loadSequencesManagement();
+            break;
+        case 'configuracoes':
+            loadConfigurationsManagement();
+            break;
+        default:
+            dynamicContent.innerHTML = '<div class="alert alert-warning">Seção não encontrada</div>';
+    }
+}
 
-    // Adapta o título do modal
-    const modalTitle = document.querySelector('#productModal .modal-title');
-    const productLabels = document.querySelectorAll('#productForm label');
-
-    if (sectionType === 'sequencias') {
-        modalTitle.textContent = 'Gerenciar Sequência Didática';
-        document.getElementById('productImage').parentElement.style.display = 'block';
-        document.getElementById('productPdf').parentElement.style.display = 'block';
-        document.getElementById('productPrice').parentElement.style.display = 'none';
-        document.getElementById('productFeatures').parentElement.style.display = 'none';
-        document.getElementById('productIncludes').parentElement.style.display = 'none';
-
-        productLabels.forEach(label => {
-            const labelText = label.textContent;
-            if (labelText.includes('Produto')) {
-                label.textContent = labelText.replace('Produto', 'Sequência');
-            }
-        });
-    } else {
-        modalTitle.textContent = 'Gerenciar Produto';
-        document.getElementById('productImage').parentElement.style.display = 'block';
-        document.getElementById('productPdf').parentElement.style.display = 'block';
-        document.getElementById('productFeatures').parentElement.style.display = 'block';
-        document.getElementById('productIncludes').parentElement.style.display = 'block';
-        document.getElementById('productPrice').parentElement.style.display = (sectionType === 'miniexps') ? 'block' : 'none';
+// Load product management interface
+function loadProductManagement(catalogType, title, icon) {
+    const data = catalogData[catalogType];
+    const products = data.products;
+    
+    const content = `
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-${icon} me-2"></i>${title}</h5>
+                <button class="btn btn-primary" onclick="openProductModal('${catalogType}')">
+                    <i class="fas fa-plus me-1"></i>Adicionar Produto
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Imagem</th>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Preço</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${products.map(product => createProductRow(product, catalogType)).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         
-        productLabels.forEach(label => {
-            const labelText = label.textContent;
-            if (labelText.includes('Sequência')) {
-                label.textContent = labelText.replace('Sequência', 'Produto');
-            }
-        });
-    }
-
-    // Preenche as categorias dinamicamente
-    const categorySelect = document.getElementById('productCategory');
-    categorySelect.innerHTML = '<option value="">Selecione...</option>';
-    if (catalogData[sectionType] && catalogData[sectionType].categories) {
-        catalogData[sectionType].categories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category;
-            option.textContent = category;
-            categorySelect.appendChild(option);
-        });
-    }
-
-    if (productId) {
-        isEditing = true;
-        editingProductId = productId;
-        const product = catalogData[sectionType].products.find(p => p.id === productId);
-        if (product) {
-            document.getElementById('productId').value = product.id;
-            document.getElementById('productName').value = product.name;
-            document.getElementById('productCategory').value = product.category;
-            document.getElementById('productDescription').value = product.description;
-            document.getElementById('productImage').value = product.image || '';
-            document.getElementById('productPdf').value = product.pdf || '';
-            if (product.price) document.getElementById('productPrice').value = product.price;
-            if (product.features) document.getElementById('productFeatures').value = product.features.join('\n');
-            if (product.includes) document.getElementById('productIncludes').value = product.includes.join('\n');
-        }
-    }
-
-    modal.show();
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-download me-2"></i>Backup e Importação</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-outline-primary w-100" onclick="exportCatalog('${catalogType}')">
+                            <i class="fas fa-download me-1"></i>Exportar Catálogo
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="file" id="import-file-${catalogType}" accept=".json" style="display: none;" onchange="importCatalog('${catalogType}', this)">
+                        <button class="btn btn-outline-success w-100" onclick="document.getElementById('import-file-${catalogType}').click()">
+                            <i class="fas fa-upload me-1"></i>Importar Catálogo
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Use as funções de backup para salvar e restaurar seus dados do catálogo.
+                    </small>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('dynamic-content').innerHTML = content;
 }
 
+// Create product row for table
+function createProductRow(product, catalogType) {
+    const imageUrl = product.image || 'https://via.placeholder.com/60x60?text=' + encodeURIComponent(product.name.substring(0, 3));
+    const price = product.price || 'Consultar';
+    
+    return `
+        <tr>
+            <td>
+                <img src="${imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/60x60?text=IMG'">
+            </td>
+            <td>
+                <strong>${product.name}</strong>
+                <br>
+                <small class="text-muted">${truncateText(product.description || '', 50)}</small>
+            </td>
+            <td>
+                <span class="badge bg-secondary">${product.category}</span>
+            </td>
+            <td>${price}</td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="editProduct('${catalogType}', '${product.id}')" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="deleteProduct('${catalogType}', '${product.id}')" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="btn btn-outline-info" onclick="duplicateProduct('${catalogType}', '${product.id}')" title="Duplicar">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `;
+}
+
+// Open product modal
+function openProductModal(catalogType, productId = null) {
+    const modal = document.getElementById('productModal');
+    const form = document.getElementById('productForm');
+    const modalTitle = modal.querySelector('.modal-title');
+    
+    isEditing = !!productId;
+    editingProductType = catalogType;
+    editingProductId = productId;
+    
+    // Reset form
+    form.reset();
+    document.getElementById('productType').value = catalogType;
+    
+    // Update modal title
+    modalTitle.textContent = isEditing ? 'Editar Produto' : 'Adicionar Produto';
+    
+    // Load categories for this catalog type
+    loadCategoriesForProduct(catalogType);
+    
+    // If editing, load product data
+    if (isEditing) {
+        loadProductData(catalogType, productId);
+    }
+    
+    // Show modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+}
+
+// Load categories for product
+function loadCategoriesForProduct(catalogType) {
+    const categorySelect = document.getElementById('productCategory');
+    const categories = catalogData[catalogType].categories;
+    
+    categorySelect.innerHTML = '<option value="">Selecione...</option>';
+    categories.forEach(category => {
+        categorySelect.innerHTML += `<option value="${category}">${category}</option>`;
+    });
+}
+
+// Load product data for editing
+function loadProductData(catalogType, productId) {
+    const product = catalogData[catalogType].products.find(p => p.id === productId);
+    if (!product) return;
+    
+    document.getElementById('productId').value = product.id;
+    document.getElementById('productName').value = product.name;
+    document.getElementById('productCategory').value = product.category;
+    document.getElementById('productDescription').value = product.description || '';
+    document.getElementById('productImage').value = product.image || '';
+    document.getElementById('productPrice').value = product.price || '';
+    
+    // Load features
+    if (product.features) {
+        document.getElementById('productFeatures').value = product.features.join('\n');
+    }
+    
+    // Load includes
+    if (product.includes) {
+        document.getElementById('productIncludes').value = product.includes.join('\n');
+    }
+    
+    document.getElementById('productPdf').value = product.pdf || '';
+}
+
+// Save product
 function saveProduct() {
     const catalogType = document.getElementById('productType').value;
     const productId = document.getElementById('productId').value || generateProductId(catalogType);
@@ -301,26 +313,21 @@ function saveProduct() {
         id: productId,
         name: document.getElementById('productName').value,
         category: document.getElementById('productCategory').value,
-        description: document.getElementById('productDescription').value || '',
+        description: document.getElementById('productDescription').value,
+        image: document.getElementById('productImage').value,
+        price: document.getElementById('productPrice').value,
+        features: document.getElementById('productFeatures').value.split('\n').filter(f => f.trim()),
+        includes: document.getElementById('productIncludes').value.split('\n').filter(i => i.trim()),
+        pdf: document.getElementById('productPdf').value
     };
     
-    if (catalogType !== 'sequencias') {
-        productData.features = document.getElementById('productFeatures').value.split('\n').filter(f => f.trim());
-        productData.includes = document.getElementById('productIncludes').value.split('\n').filter(i => i.trim());
-    }
-
-    productData.image = document.getElementById('productImage').value || '';
-    productData.pdf = document.getElementById('productPdf').value || '';
-
-    if (catalogType === 'miniexps') {
-        productData.price = document.getElementById('productPrice').value || '';
-    }
-
+    // Validate required fields
     if (!productData.name || !productData.category) {
         alert('Nome e categoria são obrigatórios!');
         return;
     }
     
+    // Save to catalog data
     if (isEditing) {
         const index = catalogData[catalogType].products.findIndex(p => p.id === productId);
         if (index !== -1) {
@@ -330,15 +337,38 @@ function saveProduct() {
         catalogData[catalogType].products.push(productData);
     }
     
-    saveDataToBackend(catalogData).then(success => {
-        if (success) {
-            alert(isEditing ? 'Item atualizado com sucesso!' : 'Item adicionado com sucesso!');
-            bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
-            showSection(currentSection);
-        }
-    });
+    // Update localStorage (for persistence in this demo)
+    try {
+        localStorage.setItem('fractal-catalog-data', JSON.stringify(catalogData));
+        
+        // Show success message
+        alert(isEditing ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!');
+        
+        // Close modal
+        bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+        
+        // Reload current section
+        showSection(currentSection);
+        
+    } catch (error) {
+        alert('Erro ao salvar produto: ' + error.message);
+    }
 }
 
+// Generate product ID
+function generateProductId(catalogType) {
+    const prefix = catalogType.substring(0, 3);
+    const timestamp = Date.now().toString().substring(-6);
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `${prefix}-${timestamp}-${random}`;
+}
+
+// Edit product
+function editProduct(catalogType, productId) {
+    openProductModal(catalogType, productId);
+}
+
+// Delete product
 function deleteProduct(catalogType, productId) {
     const product = catalogData[catalogType].products.find(p => p.id === productId);
     if (!product) return;
@@ -347,69 +377,278 @@ function deleteProduct(catalogType, productId) {
         const index = catalogData[catalogType].products.findIndex(p => p.id === productId);
         if (index !== -1) {
             catalogData[catalogType].products.splice(index, 1);
-            saveDataToBackend(catalogData).then(success => {
-                if (success) {
-                    showSection(currentSection);
-                    alert('Item excluído com sucesso!');
-                }
-            });
+            
+            // Update localStorage
+            localStorage.setItem('fractal-catalog-data', JSON.stringify(catalogData));
+            
+            // Reload section
+            showSection(currentSection);
+            
+            alert('Produto excluído com sucesso!');
         }
     }
 }
 
-function resetModal() {
-    isEditing = false;
-    editingProductId = null;
-    document.getElementById('productForm').reset();
-    document.querySelector('#productModal .modal-title').textContent = 'Adicionar Novo Produto';
+// Duplicate product
+function duplicateProduct(catalogType, productId) {
+    const product = catalogData[catalogType].products.find(p => p.id === productId);
+    if (!product) return;
+    
+    const newProduct = {
+        ...product,
+        id: generateProductId(catalogType),
+        name: product.name + ' (Cópia)'
+    };
+    
+    catalogData[catalogType].products.push(newProduct);
+    localStorage.setItem('fractal-catalog-data', JSON.stringify(catalogData));
+    
+    showSection(currentSection);
+    alert('Produto duplicado com sucesso!');
 }
 
-function generateProductId(type) {
-    const prefix = {
-        experimentos: 'exp-',
-        miniexps: 'miniexp-',
-        souvenirs: 'souvenir-',
-        sequencias: 'seq-'
-    }[type];
-    return prefix + Date.now();
+// Export catalog
+function exportCatalog(catalogType) {
+    const data = catalogData[catalogType];
+    const dataStr = JSON.stringify(data, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `fractal-${catalogType}-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
 }
 
-function exportCatalog() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(catalogData, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "catalog_backup.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-}
-
-async function importCatalog(event) {
-    const file = event.target.files[0];
-    if (!file) {
-        return;
-    }
-
+// Import catalog
+function importCatalog(catalogType, fileInput) {
+    const file = fileInput.files[0];
+    if (!file) return;
+    
     const reader = new FileReader();
-    reader.onload = async (e) => {
+    reader.onload = function(e) {
         try {
             const importedData = JSON.parse(e.target.result);
-            if (importedData && typeof importedData === 'object') {
-                const success = await saveDataToBackend(importedData);
-                if (success) {
-                    await loadSavedData();
-                    alert("Dados importados com sucesso!");
-                    showSection(currentSection);
-                }
-            } else {
-                alert("O arquivo não contém um JSON válido.");
+            
+            if (confirm('Isso substituirá todos os dados existentes. Continuar?')) {
+                catalogData[catalogType] = importedData;
+                localStorage.setItem('fractal-catalog-data', JSON.stringify(catalogData));
+                
+                showSection(currentSection);
+                alert('Catálogo importado com sucesso!');
             }
         } catch (error) {
-            alert("Erro ao ler o arquivo JSON.");
-            console.error("Erro ao importar:", error);
+            alert('Erro ao importar arquivo: ' + error.message);
         }
     };
     reader.readAsText(file);
+    
+    // Reset file input
+    fileInput.value = '';
 }
 
-document.getElementById('importFile').addEventListener('change', importCatalog);
+// Load sequences management
+function loadSequencesManagement() {
+    const content = `
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-list-ol me-2"></i>Sequências Didáticas</h5>
+                <button class="btn btn-primary" onclick="openSequenceModal()">
+                    <i class="fas fa-plus me-1"></i>Adicionar Sequência
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    ${catalogData.sequencias.products.map(sequence => `
+                        <div class="col-lg-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">${sequence.name}</h6>
+                                    <p class="card-text">${sequence.description}</p>
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-tag me-1"></i>${sequence.category} | 
+                                            <i class="fas fa-clock me-1"></i>${sequence.duration} | 
+                                            <i class="fas fa-graduation-cap me-1"></i>${sequence.level}
+                                        </small>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Experimentos:</strong>
+                                        <div class="d-flex flex-wrap gap-1 mt-1">
+                                            ${sequence.experiments.map(exp => `<span class="badge bg-primary">${exp}</span>`).join('')}
+                                        </div>
+                                    </div>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" onclick="editSequence('${sequence.id}')">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="deleteSequence('${sequence.id}')">
+                                            <i class="fas fa-trash"></i> Excluir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('dynamic-content').innerHTML = content;
+}
+
+// Load configurations management
+function loadConfigurationsManagement() {
+    const content = `
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Configurações do Sistema</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h6>Informações da Empresa</h6>
+                        <form id="companyForm">
+                            <div class="mb-3">
+                                <label class="form-label">Nome da Empresa</label>
+                                <input type="text" class="form-control" value="Fractal Ltda">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Telefone</label>
+                                <input type="text" class="form-control" value="(84) 99413-0079">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">E-mail</label>
+                                <input type="email" class="form-control" value="contato@fractal.ind.br">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Endereço</label>
+                                <textarea class="form-control" rows="3">Av. Odilon Gomes de Lima, 2001
+Capim Macio
+Natal/RN - 59078-400</textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-lg-6">
+                        <h6>Configurações do Site</h6>
+                        <form id="siteForm">
+                            <div class="mb-3">
+                                <label class="form-label">Cor Primária</label>
+                                <input type="color" class="form-control form-control-color" value="#1e5fa0">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Logo URL</label>
+                                <input type="url" class="form-control" value="https://fractal.ind.br/img/logo_site.png">
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" checked>
+                                    <label class="form-check-label">Mostrar WhatsApp flutuante</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" checked>
+                                    <label class="form-check-label">Ativar modo de manutenção</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h6>Backup Completo</h6>
+                        <p class="text-muted">Faça backup de todos os dados do sistema</p>
+                        <div class="btn-group">
+                            <button class="btn btn-success" onclick="exportAllData()">
+                                <i class="fas fa-download me-1"></i>Exportar Tudo
+                            </button>
+                            <button class="btn btn-warning" onclick="clearAllData()">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Limpar Cache
+                            </button>
+                            <button class="btn btn-danger" onclick="resetAllData()">
+                                <i class="fas fa-undo me-1"></i>Reset Completo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('dynamic-content').innerHTML = content;
+}
+
+// Export all data
+function exportAllData() {
+    const allData = {
+        catalog: catalogData,
+        timestamp: new Date().toISOString(),
+        version: '1.0'
+    };
+    
+    const dataStr = JSON.stringify(allData, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `fractal-backup-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+}
+
+// Clear all data
+function clearAllData() {
+    if (confirm('Isso limpará todo o cache do navegador. Continuar?')) {
+        localStorage.clear();
+        sessionStorage.clear();
+        alert('Cache limpo com sucesso!');
+    }
+}
+
+// Reset all data
+function resetAllData() {
+    if (confirm('ATENÇÃO: Isso irá restaurar todos os dados para o estado original. Todos os dados personalizados serão perdidos. Continuar?')) {
+        localStorage.removeItem('fractal-catalog-data');
+        location.reload();
+    }
+}
+
+// Utility function to truncate text
+function truncateText(text, maxLength) {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+}
+
+// Load saved data on startup
+function loadSavedData() {
+    const savedData = localStorage.getItem('fractal-catalog-data');
+    if (savedData) {
+        try {
+            const parsedData = JSON.parse(savedData);
+            // Merge with existing data
+            Object.keys(parsedData).forEach(key => {
+                if (catalogData[key]) {
+                    catalogData[key] = parsedData[key];
+                }
+            });
+        } catch (error) {
+            console.error('Error loading saved data:', error);
+        }
+    }
+}
+
+// Initialize saved data
+loadSavedData();
+
+// Make functions globally available
+window.showSection = showSection;
+window.openProductModal = openProductModal;
+window.saveProduct = saveProduct;
+window.editProduct = editProduct;
+window.deleteProduct = deleteProduct;
+window.duplicateProduct = duplicateProduct;
+window.exportCatalog = exportCatalog;
+window.importCatalog = importCatalog;
+window.exportAllData = exportAllData;
+window.clearAllData = clearAllData;
+window.resetAllData = resetAllData;

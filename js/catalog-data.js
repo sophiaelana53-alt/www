@@ -1,3 +1,4 @@
+// Catalog Data with detailed information
 const catalogData = {
     experimentos: {
         title: "Experimentos ExP®",
@@ -968,20 +969,60 @@ const catalogData = {
     },
     sequencias: {
         title: "Sequências Didáticas",
-        categories: ["Física Básica", "Química Geral", "Biologia", "Matemática Aplicada"],
+        categories: ["Novidades"],
         products: [
             {
-                id: "seq-teste",
+                id: "teste",
                 name: "EM BREVE",
-                category: "Física Básica",
-                description: "Novidade em breve, fique atento!",
-                experiments: [""],
-                duration: "",
-                level: "",
-                features: [
-                    ""
-                ]
+                category: "Novidades",
+                description: "Novidades Em Breve, fique atento!",
+                image: "src/img/sequencias/embreve.seq.jpg",
             },
+    
         ]
     }
 };
+
+// Get catalog data by type
+function getCatalogData(type) {
+    return catalogData[type] || { title: "Catálogo", products: [], categories: [] };
+}
+
+// Search products
+function searchProducts(products, query) {
+    if (!query) return products;
+    
+    const searchQuery = query.toLowerCase();
+    return products.filter(product => 
+        product.name.toLowerCase().includes(searchQuery) ||
+        product.description.toLowerCase().includes(searchQuery) ||
+        product.category.toLowerCase().includes(searchQuery) ||
+        (product.features && product.features.some(feature => 
+            feature.toLowerCase().includes(searchQuery)
+        ))
+    );
+}
+
+// Filter products by category
+function filterProducts(products, category) {
+    if (category === 'all') return products;
+    return products.filter(product => product.category === category);
+}
+
+// Get product by ID
+function getProductById(type, id) {
+    const catalog = getCatalogData(type);
+    return catalog.products.find(product => product.id === id);
+}
+
+// WhatsApp message generator
+function generateWhatsAppMessage(product, catalogType) {
+    const baseMessage = `Olá! Tenho interesse no produto:`;
+    const productInfo = `
+*${product.name}*
+${product.description}
+
+Gostaria de saber mais informações sobre disponibilidade e orçamento.`;
+    
+    return encodeURIComponent(baseMessage + productInfo);
+}

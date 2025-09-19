@@ -37,7 +37,6 @@
             background: none;
             width: 100%;
             text-align: left;
-            cursor: pointer;
         }
 
         .sidebar .nav-link:hover,
@@ -55,13 +54,13 @@
             background: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
 
         .card {
             border: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
 
@@ -80,7 +79,31 @@
             background-color: #f8f9fa;
             font-weight: 600;
         }
-        
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -98,6 +121,7 @@
     </style>
 </head>
 <body>
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="px-3 mb-4">
             <img src="https://fractal.ind.br/img/logo_site.png" alt="Fractal" class="img-fluid" style="max-width: 150px;">
@@ -125,7 +149,9 @@
         </nav>
     </div>
 
+    <!-- Main Content -->
     <div class="main-content">
+        <!-- Header -->
         <div class="admin-header">
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="mb-0">Fractal Admin</h1>
@@ -138,6 +164,7 @@
             </div>
         </div>
 
+        <!-- Dashboard Section -->
         <div id="dashboard-section" class="section">
             <div class="row">
                 <div class="col-lg-3 col-md-6">
@@ -196,7 +223,8 @@
                                         </tr>
                                     </thead>
                                     <tbody id="popular-products">
-                                        </tbody>
+                                        <!-- Content will be loaded dynamically -->
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -209,16 +237,16 @@
                         </div>
                         <div class="card-body">
                             <div class="d-grid gap-2">
-                                <button class="btn btn-primary add-product-btn" data-bs-toggle="modal" data-bs-target="#productModal" data-section-type="experimentos">
+                                <button class="btn btn-primary" onclick="showSection('experimentos')">
                                     <i class="fas fa-plus me-1"></i>Adicionar Experimento
                                 </button>
-                                <button class="btn btn-success add-product-btn" data-bs-toggle="modal" data-bs-target="#productModal" data-section-type="miniexps">
+                                <button class="btn btn-success" onclick="showSection('miniexps')">
                                     <i class="fas fa-plus me-1"></i>Adicionar MiniExP
                                 </button>
-                                <button class="btn btn-warning add-product-btn" data-bs-toggle="modal" data-bs-target="#productModal" data-section-type="souvenirs">
+                                <button class="btn btn-warning" onclick="showSection('souvenirs')">
                                     <i class="fas fa-plus me-1"></i>Adicionar Souvenir
                                 </button>
-                                <button class="btn btn-info add-product-btn" data-bs-toggle="modal" data-bs-target="#productModal" data-section-type="sequencias">
+                                <button class="btn btn-info" onclick="showSection('sequencias')">
                                     <i class="fas fa-plus me-1"></i>Adicionar Sequência
                                 </button>
                             </div>
@@ -228,26 +256,19 @@
             </div>
         </div>
 
-        <div id="dynamic-content" class="section" style="display:none;">
-            </div>
-        
-        <div class="mt-4 d-flex justify-content-end">
-            <button onclick="exportCatalog()" class="btn btn-secondary me-2">
-                <i class="fas fa-download me-1"></i> Exportar Catálogo JSON
-            </button>
-            <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">
-                <i class="fas fa-upload me-1"></i> Importar Catálogo JSON
-            </button>
-            <input type="file" id="importFile" accept=".json" style="display:none;">
+        <!-- Other sections will be loaded dynamically -->
+        <div id="dynamic-content">
+            <!-- Content for other sections will be generated here -->
         </div>
     </div>
 
-    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Gerenciar Produto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Gerenciar Produto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="productForm">
@@ -257,13 +278,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="productName" class="form-label">Nome</label>
+                                    <label class="form-label">Nome do Produto</label>
                                     <input type="text" class="form-control" id="productName" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="productCategory" class="form-label">Categoria</label>
+                                    <label class="form-label">Categoria</label>
                                     <select class="form-select" id="productCategory" required>
                                         <option value="">Selecione...</option>
                                     </select>
@@ -272,44 +293,38 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label for="productDescription" class="form-label">Descrição</label>
+                            <label class="form-label">Descrição</label>
                             <textarea class="form-control" id="productDescription" rows="3"></textarea>
                         </div>
                         
-                        <div id="miniexp-specific-fields">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="productImage" class="form-label">URL da Imagem</label>
-                                        <input type="url" class="form-control" id="productImage">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="productPrice" class="form-label">Preço</label>
-                                        <input type="text" class="form-control" id="productPrice" placeholder="R$ 75,00">
-                                    </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">URL da Imagem</label>
+                                    <input type="url" class="form-control" id="productImage">
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="productFeatures" class="form-label">Características (uma por linha)</label>
-                                <textarea class="form-control" id="productFeatures" rows="4" placeholder="Digite uma característica por linha"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="productIncludes" class="form-label">Itens Inclusos (um por linha)</label>
-                                <textarea class="form-control" id="productIncludes" rows="4" placeholder="Digite um item por linha"></textarea>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Preço</label>
+                                    <input type="text" class="form-control" id="productPrice" placeholder="R$ 75,00">
+                                </div>
                             </div>
                         </div>
-
-                        <div id="experimento-sequencia-specific-fields">
-                             <div class="mb-3">
-                                <label for="productPdf" class="form-label">URL do PDF Manual</label>
-                                <input type="url" class="form-control" id="productPdf">
-                             </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Características (uma por linha)</label>
+                            <textarea class="form-control" id="productFeatures" rows="4" placeholder="Digite uma característica por linha"></textarea>
                         </div>
-                        <div class="mb-3" id="productVideosGroup">
-                           <label for="productVideos" class="form-label">Vídeos (Título - URL, um por linha)</label>
-                           <textarea class="form-control" id="productVideos" rows="2"></textarea>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Itens Inclusos (um por linha)</label>
+                            <textarea class="form-control" id="productIncludes" rows="4" placeholder="Digite um item por linha"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">URL do PDF Manual</label>
+                            <input type="url" class="form-control" id="productPdf">
                         </div>
                     </form>
                 </div>
@@ -322,6 +337,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/catalog-data.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>
